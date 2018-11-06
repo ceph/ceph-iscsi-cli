@@ -566,6 +566,7 @@ def _gateway(gateway_name=None):
 
             if nosync.lower() != 'true':
                 logger.info("Syncing LUN configuration")
+                LUN.clear_tcm_cache()
                 try:
                     LUN.define_luns(logger, config, gateway)
                 except CephiSCSIError as err:
@@ -798,6 +799,7 @@ def _disk(image_id):
         # A put is for either a create or a resize
         # put('http://localhost:5000/api/disk/rbd.ansible3',
         #     data={'pool': 'rbd','size': '3G','owner':'ceph-1'})
+        LUN.clear_tcm_cache()
 
         pool_name, image_name = image_id.split('.', 1)
         mode = request.form['mode']
@@ -901,6 +903,7 @@ def _disk(image_id):
     else:
         # DELETE request
         # let's assume that the request has been validated by the caller
+        LUN.clear_tcm_cache()
 
         # if valid_request(request.remote_addr):
         purge_host = request.form['purge_host']
@@ -937,6 +940,7 @@ def _disk(image_id):
 
 def lun_reconfigure(image_id, controls):
     logger.debug("lun reconfigure request")
+    LUN.clear_tcm_cache()
 
     config.refresh()
     disk = config.config['disks'].get(image_id, None)
